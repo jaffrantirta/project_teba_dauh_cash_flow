@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getSupabase } from '@/lib/supabase'
 import { deleteMember } from '@/app/actions'
 import { AddMemberForm } from '@/components/AddMemberForm'

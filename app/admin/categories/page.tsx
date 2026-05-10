@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getSupabase } from '@/lib/supabase'
 import { deleteCategory } from '@/app/actions'
 import { AddCategoryForm } from '@/components/AddCategoryForm'

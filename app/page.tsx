@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getSupabase } from '@/lib/supabase'
 import { formatIDR, formatDate } from '@/lib/format'
 import { ThemeToggle } from '@/components/ThemeToggle'

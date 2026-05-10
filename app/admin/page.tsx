@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import { getSupabase } from '@/lib/supabase'
 import { formatIDR, formatDate } from '@/lib/format'

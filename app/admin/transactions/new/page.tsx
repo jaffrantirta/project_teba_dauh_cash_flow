@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getSupabase } from '@/lib/supabase'
 import { TransactionForm } from '@/components/TransactionForm'
 import type { Member, Category } from '@/lib/types'
