@@ -10,6 +10,12 @@ interface Props {
   categories: Category[]
 }
 
+const inputCls =
+  'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500'
+
+const selectCls =
+  'w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+
 export function TransactionForm({ members, categories }: Props) {
   const [type, setType] = useState<'in' | 'out'>('in')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -24,20 +30,20 @@ export function TransactionForm({ members, categories }: Props) {
   }
 
   return (
-    <form action={formAction} encType="multipart/form-data" className="space-y-5">
+    <form action={formAction} className="space-y-5">
       <input type="hidden" name="type" value={type} />
 
       {/* Type Toggle */}
       <div>
-        <p className="text-sm font-medium text-gray-700 mb-2">Tipe Transaksi</p>
-        <div className="flex rounded-lg border border-gray-200 overflow-hidden">
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Tipe Transaksi</p>
+        <div className="flex rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
           <button
             type="button"
             onClick={() => setType('in')}
             className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${
               type === 'in'
                 ? 'bg-emerald-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
             }`}
           >
             + Pemasukan
@@ -48,7 +54,7 @@ export function TransactionForm({ members, categories }: Props) {
             className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${
               type === 'out'
                 ? 'bg-red-500 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
             }`}
           >
             − Pengeluaran
@@ -58,7 +64,7 @@ export function TransactionForm({ members, categories }: Props) {
 
       {/* Amount */}
       <div>
-        <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
           Jumlah (Rp) <span className="text-red-500">*</span>
         </label>
         <input
@@ -68,7 +74,7 @@ export function TransactionForm({ members, categories }: Props) {
           required
           min={1}
           step={1}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+          className={inputCls}
           placeholder="Contoh: 100000"
         />
       </div>
@@ -76,11 +82,11 @@ export function TransactionForm({ members, categories }: Props) {
       {/* Conditional fields */}
       {type === 'in' ? (
         <div>
-          <label htmlFor="member_id" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="member_id" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
             Dari Anggota <span className="text-red-500">*</span>
           </label>
           {members.length === 0 ? (
-            <p className="text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+            <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 rounded-lg">
               Belum ada anggota.{' '}
               <a href="/admin/members" className="underline font-medium">
                 Tambah anggota dulu
@@ -88,12 +94,7 @@ export function TransactionForm({ members, categories }: Props) {
               .
             </p>
           ) : (
-            <select
-              id="member_id"
-              name="member_id"
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
-            >
+            <select id="member_id" name="member_id" required className={selectCls}>
               <option value="">-- Pilih anggota --</option>
               {members.map((m) => (
                 <option key={m.id} value={m.id}>
@@ -106,11 +107,11 @@ export function TransactionForm({ members, categories }: Props) {
       ) : (
         <>
           <div>
-            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
               Kategori <span className="text-red-500">*</span>
             </label>
             {categories.length === 0 ? (
-              <p className="text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+              <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 rounded-lg">
                 Belum ada kategori.{' '}
                 <a href="/admin/categories" className="underline font-medium">
                   Tambah kategori dulu
@@ -118,12 +119,7 @@ export function TransactionForm({ members, categories }: Props) {
                 .
               </p>
             ) : (
-              <select
-                id="category_id"
-                name="category_id"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 bg-white"
-              >
+              <select id="category_id" name="category_id" required className={selectCls}>
                 <option value="">-- Pilih kategori --</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -135,14 +131,14 @@ export function TransactionForm({ members, categories }: Props) {
           </div>
 
           <div>
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
               Keterangan
             </label>
             <textarea
               id="notes"
               name="notes"
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 resize-none"
+              className={`${inputCls} resize-none`}
               placeholder="Keterangan pengeluaran (opsional)"
             />
           </div>
@@ -151,7 +147,7 @@ export function TransactionForm({ members, categories }: Props) {
 
       {/* Proof image upload */}
       <div>
-        <label htmlFor="proof" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="proof" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
           Bukti Foto (opsional)
         </label>
         <input
@@ -160,7 +156,7 @@ export function TransactionForm({ members, categories }: Props) {
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+          className="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-100 dark:file:bg-gray-600 file:text-gray-700 dark:file:text-gray-200 hover:file:bg-gray-200 dark:hover:file:bg-gray-500"
         />
         {previewUrl && (
           <div className="mt-3 relative w-40 h-40">
@@ -168,7 +164,7 @@ export function TransactionForm({ members, categories }: Props) {
               src={previewUrl}
               alt="Preview bukti"
               fill
-              className="object-cover rounded-lg border border-gray-200"
+              className="object-cover rounded-lg border border-gray-200 dark:border-gray-600"
             />
           </div>
         )}
@@ -176,7 +172,7 @@ export function TransactionForm({ members, categories }: Props) {
 
       {/* Error */}
       {state && 'error' in state && (
-        <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+        <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
           {state.error}
         </p>
       )}
@@ -185,7 +181,7 @@ export function TransactionForm({ members, categories }: Props) {
       <div className="flex gap-3 pt-2">
         <a
           href="/admin"
-          className="flex-1 py-2.5 px-4 text-center border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex-1 py-2.5 px-4 text-center border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         >
           Batal
         </a>

@@ -20,11 +20,11 @@ export default async function NewTransactionPage() {
   return (
     <div className="max-w-lg">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">Tambah Transaksi</h1>
-        <p className="text-sm text-gray-500 mt-1">Catat pemasukan atau pengeluaran kas</p>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Tambah Transaksi</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Catat pemasukan atau pengeluaran kas</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
         <TransactionForm members={members} categories={categories} />
       </div>
     </div>
