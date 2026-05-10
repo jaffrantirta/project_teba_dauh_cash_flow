@@ -1,6 +1,6 @@
 import { getSupabase } from '@/lib/supabase'
-import { addCategory, deleteCategory } from '@/app/actions'
-import { AddItemForm } from '@/components/AddItemForm'
+import { deleteCategory } from '@/app/actions'
+import { AddCategoryForm } from '@/components/AddCategoryForm'
 import { formatDate } from '@/lib/format'
 import type { Category } from '@/lib/types'
 
@@ -27,12 +27,7 @@ export default async function CategoriesPage() {
       {/* Add form */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <p className="text-sm font-semibold text-gray-700 mb-3">Tambah Kategori Baru</p>
-        <AddItemForm
-          action={addCategory}
-          label="Nama kategori"
-          placeholder="Nama kategori"
-          buttonLabel="+ Tambah"
-        />
+        <AddCategoryForm />
       </div>
 
       {/* Categories list */}

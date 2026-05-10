@@ -1,6 +1,6 @@
 import { getSupabase } from '@/lib/supabase'
-import { addMember, deleteMember } from '@/app/actions'
-import { AddItemForm } from '@/components/AddItemForm'
+import { deleteMember } from '@/app/actions'
+import { AddMemberForm } from '@/components/AddMemberForm'
 import { formatDate } from '@/lib/format'
 import type { Member } from '@/lib/types'
 
@@ -27,12 +27,7 @@ export default async function MembersPage() {
       {/* Add form */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <p className="text-sm font-semibold text-gray-700 mb-3">Tambah Anggota Baru</p>
-        <AddItemForm
-          action={addMember}
-          label="Nama anggota"
-          placeholder="Nama anggota"
-          buttonLabel="+ Tambah"
-        />
+        <AddMemberForm />
       </div>
 
       {/* Members list */}

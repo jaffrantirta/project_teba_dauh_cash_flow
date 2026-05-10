@@ -54,7 +54,10 @@ export async function addMember(
   if (!name) return { error: 'Nama anggota wajib diisi' }
 
   const { error } = await getSupabase().from('members').insert({ name })
-  if (error) return { error: error.message }
+  if (error) {
+    console.error('[addMember]', error)
+    return { error: `${error.message} (code: ${error.code})` }
+  }
 
   revalidatePath('/admin/members')
   return { success: true }

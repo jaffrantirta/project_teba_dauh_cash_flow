@@ -67,7 +67,7 @@ export function TransactionForm({ members, categories }: Props) {
           type="number"
           required
           min={1}
-          step={1000}
+          step={1}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           placeholder="Contoh: 100000"
         />
