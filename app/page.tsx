@@ -6,6 +6,7 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { BalanceChart, type BalancePoint } from '@/components/BalanceChart'
 import { MonthlyChart, type MonthlyPoint } from '@/components/MonthlyChart'
 import { TransactionFilter } from '@/components/TransactionFilter'
+import { PaymentInfo } from '@/components/PaymentInfo'
 import type { Transaction } from '@/lib/types'
 
 const MONTHS_ID = [
@@ -145,6 +146,9 @@ export default async function DashboardPage({
             </div>
           </div>
         </div>
+
+        {/* Payment info */}
+        <PaymentInfo />
 
         {/* Charts — always show full history */}
         {balancePoints.length > 1 && (
