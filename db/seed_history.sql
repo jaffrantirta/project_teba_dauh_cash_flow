@@ -1,6 +1,6 @@
 -- =================================================================
 -- Teba Dauh — Data Iuran Historis 2023–2025
--- Jalankan SEKALI di Supabase SQL Editor
+-- Jalankan SEKALI di Neon SQL Editor
 --
 -- Catatan:
 --   Mei 2023 dicatat sebagai "Saldo awal" tanpa nama anggota.

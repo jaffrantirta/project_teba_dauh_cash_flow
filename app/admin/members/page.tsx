@@ -1,17 +1,13 @@
 export const dynamic = 'force-dynamic'
 
-import { getSupabase } from '@/lib/supabase'
+import { getSql } from '@/lib/db'
 import { deleteMember } from '@/app/actions'
 import { AddMemberForm } from '@/components/AddMemberForm'
 import { formatDate } from '@/lib/format'
 import type { Member } from '@/lib/types'
 
 async function getMembers(): Promise<Member[]> {
-  const { data } = await getSupabase()
-    .from('members')
-    .select('*')
-    .order('created_at', { ascending: false })
-  return (data ?? []) as Member[]
+  return await getSql()`select * from members order by created_at desc` as Member[]
 }
 
 export default async function MembersPage() {

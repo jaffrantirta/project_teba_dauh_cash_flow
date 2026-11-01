@@ -1,19 +1,16 @@
 export const dynamic = 'force-dynamic'
 
-import { getSupabase } from '@/lib/supabase'
+import { getSql } from '@/lib/db'
 import { TransactionForm } from '@/components/TransactionForm'
 import type { Member, Category } from '@/lib/types'
 
 async function getData() {
-  const supabase = getSupabase()
-  const [membersRes, categoriesRes] = await Promise.all([
-    supabase.from('members').select('*').order('name'),
-    supabase.from('categories').select('*').order('name'),
-  ])
-  return {
-    members: (membersRes.data ?? []) as Member[],
-    categories: (categoriesRes.data ?? []) as Category[],
-  }
+  const sql = getSql()
+  const [members, categories] = await Promise.all([
+    sql`select * from members order by name`,
+    sql`select * from categories order by name`,
+  ]) as [Member[], Category[]]
+  return { members, categories }
 }
 
 export default async function NewTransactionPage() {

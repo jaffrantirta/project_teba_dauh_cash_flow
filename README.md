@@ -34,3 +34,9 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Database & storage
+
+- **Neon Postgres**: set `DATABASE_URL`. Create tables with `psql "$DATABASE_URL" -f db/schema.sql`.
+- **Vercel Blob** (proof images): set `BLOB_READ_WRITE_TOKEN`.
+- Both env vars are added automatically when you connect Neon and Blob to the Vercel project.

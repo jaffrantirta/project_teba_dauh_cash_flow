@@ -3,7 +3,8 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { getSupabase } from '@/lib/supabase'
+import { put } from '@vercel/blob'
+import { getSql } from '@/lib/db'
 import type { ActionState } from '@/lib/types'
 
 async function requireAdmin() {
@@ -53,10 +54,11 @@ export async function addMember(
   const name = (formData.get('name') as string)?.trim()
   if (!name) return { error: 'Nama anggota wajib diisi' }
 
-  const { error } = await getSupabase().from('members').insert({ name })
-  if (error) {
+  try {
+    await getSql()`insert into members (name) values (${name})`
+  } catch (error) {
     console.error('[addMember]', error)
-    return { error: `${error.message} (code: ${error.code})` }
+    return { error: (error as Error).message }
   }
 
   revalidatePath('/admin/members')
@@ -65,7 +67,7 @@ export async function addMember(
 
 export async function deleteMember(id: string) {
   await requireAdmin()
-  await getSupabase().from('members').delete().eq('id', id)
+  await getSql()`delete from members where id = ${id}`
   revalidatePath('/admin/members')
   revalidatePath('/admin/transactions/new')
 }
@@ -80,8 +82,11 @@ export async function addCategory(
   const name = (formData.get('name') as string)?.trim()
   if (!name) return { error: 'Nama kategori wajib diisi' }
 
-  const { error } = await getSupabase().from('categories').insert({ name })
-  if (error) return { error: error.message }
+  try {
+    await getSql()`insert into categories (name) values (${name})`
+  } catch (error) {
+    return { error: (error as Error).message }
+  }
 
   revalidatePath('/admin/categories')
   return { success: true }
@@ -89,7 +94,7 @@ export async function addCategory(
 
 export async function deleteCategory(id: string) {
   await requireAdmin()
-  await getSupabase().from('categories').delete().eq('id', id)
+  await getSql()`delete from categories where id = ${id}`
   revalidatePath('/admin/categories')
   revalidatePath('/admin/transactions/new')
 }
@@ -120,35 +125,31 @@ export async function addTransaction(
   let proofImageUrl: string | null = null
 
   if (proofFile && proofFile.size > 0) {
-    const supabase = getSupabase()
     const ext = proofFile.name.split('.').pop() ?? 'jpg'
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-    const buffer = Buffer.from(await proofFile.arrayBuffer())
-
-    const { data, error: uploadError } = await supabase.storage
-      .from('proofs')
-      .upload(filename, buffer, { contentType: proofFile.type })
-
-    if (uploadError) return { error: `Upload bukti gagal: ${uploadError.message}` }
-
-    if (data) {
-      const { data: { publicUrl } } = supabase.storage
-        .from('proofs')
-        .getPublicUrl(filename)
-      proofImageUrl = publicUrl
+    try {
+      const blob = await put(`proofs/${Date.now()}.${ext}`, proofFile, {
+        access: 'public',
+        addRandomSuffix: true,
+        contentType: proofFile.type,
+      })
+      proofImageUrl = blob.url
+    } catch (error) {
+      return { error: `Upload bukti gagal: ${(error as Error).message}` }
     }
   }
 
-  const { error } = await getSupabase().from('transactions').insert({
-    type,
-    amount,
-    member_id: type === 'in' ? (memberId || null) : null,
-    category_id: type === 'out' ? (categoryId || null) : null,
-    notes,
-    proof_image_url: proofImageUrl,
-  })
-
-  if (error) return { error: error.message }
+  try {
+    await getSql()`
+      insert into transactions (type, amount, member_id, category_id, notes, proof_image_url)
+      values (
+        ${type}, ${amount},
+        ${type === 'in' ? (memberId || null) : null},
+        ${type === 'out' ? (categoryId || null) : null},
+        ${notes}, ${proofImageUrl}
+      )`
+  } catch (error) {
+    return { error: (error as Error).message }
+  }
 
   revalidatePath('/')
   revalidatePath('/admin')
@@ -157,7 +158,7 @@ export async function addTransaction(
 
 export async function deleteTransaction(id: string) {
   await requireAdmin()
-  await getSupabase().from('transactions').delete().eq('id', id)
+  await getSql()`delete from transactions where id = ${id}`
   revalidatePath('/')
   revalidatePath('/admin')
 }

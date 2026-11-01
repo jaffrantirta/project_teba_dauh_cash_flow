@@ -1,25 +1,26 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { getSupabase } from '@/lib/supabase'
+import { getSql } from '@/lib/db'
 import { formatIDR, formatDate } from '@/lib/format'
 import { deleteTransaction } from '@/app/actions'
 import type { Transaction } from '@/lib/types'
 
 async function getData() {
-  const supabase = getSupabase()
+  const sql = getSql()
 
-  const [totalsRes, transactionsRes] = await Promise.all([
-    supabase.from('transactions').select('type, amount'),
-    supabase
-      .from('transactions')
-      .select('*, members(name), categories(name)')
-      .order('created_at', { ascending: false })
-      .limit(100),
-  ])
-
-  const totals = totalsRes.data ?? []
-  const transactions = (transactionsRes.data ?? []) as Transaction[]
+  const [totals, transactions] = await Promise.all([
+    sql`select type, amount from transactions`,
+    sql`
+    select t.*,
+      case when m.id is null then null else json_build_object('name', m.name) end as members,
+      case when c.id is null then null else json_build_object('name', c.name) end as categories
+    from transactions t
+    left join members m on m.id = t.member_id
+    left join categories c on c.id = t.category_id
+    order by t.created_at desc
+    limit 100`,
+  ]) as [Pick<Transaction, 'type' | 'amount'>[], Transaction[]]
 
   const totalMasuk = totals
     .filter((t) => t.type === 'in')

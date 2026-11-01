@@ -1,17 +1,13 @@
 export const dynamic = 'force-dynamic'
 
-import { getSupabase } from '@/lib/supabase'
+import { getSql } from '@/lib/db'
 import { deleteCategory } from '@/app/actions'
 import { AddCategoryForm } from '@/components/AddCategoryForm'
 import { formatDate } from '@/lib/format'
 import type { Category } from '@/lib/types'
 
 async function getCategories(): Promise<Category[]> {
-  const { data } = await getSupabase()
-    .from('categories')
-    .select('*')
-    .order('created_at', { ascending: false })
-  return (data ?? []) as Category[]
+  return await getSql()`select * from categories order by created_at desc` as Category[]
 }
 
 export default async function CategoriesPage() {

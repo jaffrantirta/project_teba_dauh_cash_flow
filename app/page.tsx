@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 
-import { getSupabase } from '@/lib/supabase'
+import { getSql } from '@/lib/db'
 import { formatIDR, formatDate } from '@/lib/format'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { BalanceChart, type BalancePoint } from '@/components/BalanceChart'
@@ -15,36 +15,34 @@ const MONTHS_ID = [
 ]
 
 async function getData(filterYear: number | null, filterMonth: number | null) {
-  const supabase = getSupabase()
+  const sql = getSql()
 
-  // All transactions — used for overall balance and charts
-  const allRes = await supabase
-    .from('transactions')
-    .select('type, amount, created_at')
-    .order('created_at', { ascending: true })
-
-  // Filtered transaction list
-  let listQuery = supabase
-    .from('transactions')
-    .select('*, members(name), categories(name)')
-    .order('created_at', { ascending: false })
-
+  let start: string | null = null
+  let end: string | null = null
   if (filterYear && filterMonth) {
-    const start = new Date(filterYear, filterMonth - 1, 1).toISOString()
-    const end   = new Date(filterYear, filterMonth, 1).toISOString()
-    listQuery = listQuery.gte('created_at', start).lt('created_at', end)
+    start = new Date(filterYear, filterMonth - 1, 1).toISOString()
+    end   = new Date(filterYear, filterMonth, 1).toISOString()
   } else if (filterYear) {
-    const start = new Date(filterYear, 0, 1).toISOString()
-    const end   = new Date(filterYear + 1, 0, 1).toISOString()
-    listQuery = listQuery.gte('created_at', start).lt('created_at', end)
-  } else {
-    listQuery = listQuery.limit(50)
+    start = new Date(filterYear, 0, 1).toISOString()
+    end   = new Date(filterYear + 1, 0, 1).toISOString()
   }
 
-  const [allResult, listResult] = await Promise.all([allRes, listQuery])
-
-  const all = allResult.data ?? []
-  const transactions = (listResult.data ?? []) as Transaction[]
+  const [all, transactions] = await Promise.all([
+    // All transactions — used for overall balance and charts
+    sql`select type, amount, created_at from transactions order by created_at asc`,
+    // Filtered transaction list (no filter → last 50; LIMIT NULL = no limit)
+    sql`
+    select t.*,
+      case when m.id is null then null else json_build_object('name', m.name) end as members,
+      case when c.id is null then null else json_build_object('name', c.name) end as categories
+    from transactions t
+    left join members m on m.id = t.member_id
+    left join categories c on c.id = t.category_id
+    where (${start}::timestamptz is null or t.created_at >= ${start}::timestamptz)
+      and (${end}::timestamptz is null or t.created_at < ${end}::timestamptz)
+    order by t.created_at desc
+    limit ${start ? null : 50}`,
+  ]) as [Pick<Transaction, 'type' | 'amount' | 'created_at'>[], Transaction[]]
 
   // Compute overall balance + charts from all transactions
   let totalMasuk = 0
